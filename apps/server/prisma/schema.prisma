@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+
+  authenticationMethod  AuthenticationMethod
+  authenticationProfile Json?
+
+  displayName     String?
+  name            String?
+  avatarUrl       String?
+  admin           Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime
+  OrgMemberInvite OrgMemberInvite[]
+  OrgMember       OrgMember[]
+}
+
+enum AuthenticationMethod {
+  GOOGLE
+  MAGIC_LINK
+}
+
+model OrgMemberInvite {
+  id    String        @id @default(cuid())
+  token String        @unique @default(cuid())
+  email String
+  role  OrgMemberRole @default(MEMBER)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+
+  inviter   User   @relation(fields: [inviterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  inviterId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, email])
+}
+
+enum OrgMemberRole {
+  ADMIN
+  MEMBER
+}
+
+model Organization {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  title       String
+  description String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  Apps App[]
+  members  OrgMember[]
+  invites  OrgMemberInvite[]
+}
+
+model OrgMember {
+  id String @id @default(cuid())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  role OrgMemberRole @default(MEMBER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, userId])
+}
+
+model App {
+  id   String @id @default(cuid())
+  slug String @unique
+  name String
+
+  externalRef String @unique
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  organizationId String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  version AppVersion @default(V2)
+}
+
+enum AppVersion {
+  V2
+  V3
+}
+

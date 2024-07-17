@@ -1,0 +1,91 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_CONTAINER_NAME:-dev_app}
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - '5173:5173'
+      - '3001:3001'
+      - '3003:3003'
+    volumes:
+      - .:/app/
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  redis:
+    image: ${REDIS_IMAGE:-redis}
+    container_name: ${REDIS_CONTAINER_NAME:-redis-2}
+    restart: always
+    volumes:
+      - redis_volume_data:/data
+    networks:
+      - app_network
+    ports:
+      - 6378:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:latest}
+    hostname: ${POSTGRES_HOSTNAME:-postgres}
+    container_name: ${POSTGRES_CONTAINER_NAME:-postgres_db}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+# GUI FOR DEVS 
+  redis_gui:
+    image: ${REDIS_GUI_IMAGE:-redislabs/redisinsight:1.14.0}
+    container_name: ${REDIS_GUI_CONTAINER_NAME:-redis_gui}
+    restart: always
+    ports:
+      - 9002:8001
+    volumes:
+      - redis_insight_volume_data:/db
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: postgres_gui
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+volumes:
+  redis_insight_volume_data:
+  redis_volume_data:
+  pgadmin-data:
+
+networks:
+  app_network:
+    driver: bridge
