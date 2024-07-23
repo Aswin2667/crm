@@ -1,0 +1,144 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  email String [unique, not null]
+  authenticationMethod AuthenticationMethod [not null]
+  authenticationProfile Json
+  displayName String
+  name String
+  avatarUrl String
+  admin Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime [not null]
+  OrgMemberInvite OrgMemberInvite [not null]
+  OrgMember OrgMember [not null]
+}
+
+Table OrgMemberInvite {
+  id String [pk]
+  token String [unique, not null]
+  email String [not null]
+  role OrgMemberRole [not null, default: 'MEMBER']
+  organization Organization [not null]
+  organizationId String [not null]
+  inviter User [not null]
+  inviterId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (organizationId, email) [unique]
+  }
+}
+
+Table Organization {
+  id String [pk]
+  slug String [unique, not null]
+  shopifyOrganizationId String [unique, not null]
+  shopifyPartnerApiToken String [unique, not null]
+  description String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  Apps Apps [not null]
+  members OrgMember [not null]
+  invites OrgMemberInvite [not null]
+}
+
+Table OrgMember {
+  id String [pk]
+  organization Organization [not null]
+  organizationId String [not null]
+  user User [not null]
+  userId String [not null]
+  role OrgMemberRole [not null, default: 'MEMBER']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (organizationId, userId) [unique]
+  }
+}
+
+Table Apps {
+  id String [pk]
+  slug String [unique, not null]
+  name String [not null]
+  externalRef String [unique, not null]
+  organization Organization [not null]
+  organizationId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  version AppVersion [not null, default: 'V2']
+  LeadApps LeadApps [not null]
+}
+
+Table MessageHistory {
+  id String [pk]
+}
+
+Table Notes {
+  id String [pk]
+  leadId String [not null]
+  Lead Lead [not null]
+}
+
+Table Lead {
+  id String [pk]
+  shopifyDomain String [unique, not null]
+  shopifyStoreId String [unique, not null]
+  noteId Notes [not null]
+  Apps LeadApps [not null]
+}
+
+Table LeadApps {
+  id String [pk]
+  leadId String [not null]
+  appId String [not null]
+  Lead Lead [not null]
+  App Apps [not null]
+
+  indexes {
+    (appId, leadId) [unique]
+  }
+}
+
+Table Contacts {
+  id String [pk]
+}
+
+Enum AuthenticationMethod {
+  GOOGLE
+  MAGIC_LINK
+}
+
+Enum OrgMemberRole {
+  ADMIN
+  MEMBER
+}
+
+Enum AppVersion {
+  V2
+  V3
+}
+
+Ref: OrgMemberInvite.organizationId > Organization.id [delete: Cascade]
+
+Ref: OrgMemberInvite.inviterId > User.id [delete: Cascade]
+
+Ref: OrgMember.organizationId > Organization.id [delete: Cascade]
+
+Ref: OrgMember.userId > User.id [delete: Cascade]
+
+Ref: Apps.organizationId > Organization.id [delete: Cascade]
+
+Ref: Notes.leadId > Lead.id
+
+Ref: LeadApps.leadId > Lead.id [delete: Cascade]
+
+Ref: LeadApps.appId > Apps.id [delete: Cascade]

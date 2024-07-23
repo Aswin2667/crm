@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: ${APP_CONTAINER_NAME:-dev_app}
     ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
+      - '3000:3000'
       - '5173:5173'
       - '3001:3001'
       - '3003:3003'

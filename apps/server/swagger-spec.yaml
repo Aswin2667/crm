@@ -1,0 +1,1378 @@
+openapi: 3.0.3
+info:
+  title: API doc
+  description: |-
+    This is Test purpose
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: aswin@cartrabbit.com
+  version: 1.0.11
+  # ----------------------------------------------------------------- tags ----------------------------------------------------------------------------
+tags:
+  - name: Users
+    description: Operations related to users
+  - name: Invitations
+    description: Operations related to invitations
+  - name: Organizations
+    description: Operations related to organizations
+  - name: Apps
+    description: Operations related to applications
+  - name: Leads
+    description: Operations related to leads
+  - name: Notes
+    description: Operations related to notes
+  - name: Contacts
+    description: Operations related to contacts
+  - name: MessageHistory
+    description: Operations related to message history
+
+  # ----------------------------------------------------------------- API - Endpoints ----------------------------------------------------------------------------
+
+paths:
+  # Users
+  /users:
+    post:
+      summary: Create a user
+      operationId: createUser
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                email:
+                  type: string
+                  example: "johndoe@example.com"
+                role:
+                  type: string
+                  example: "admin"
+                authenticationMethod:
+                  type: string
+                  enum:
+                    - GOOGLE
+                    - MAGIC_LINK
+              required:
+                - name
+                - email
+                - role
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        description: ID of the user to retrieve
+    get:
+      summary: Retrieve a user by ID
+      operationId: getUserById
+      tags:
+        - Users
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a user
+      operationId: updateUser
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request body
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a user
+      operationId: deleteUser
+      tags:
+        - Users
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+
+  # OrgMemberInvite
+  /org-member-invites:
+    get:
+      summary: Get all organization member invites
+      operationId: getAllOrgMemberInvites
+      tags:
+        - Invitations
+      responses:
+        '200':
+          description: List of organization member invites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrgMemberInvite'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create an organization member invite
+      operationId: createOrgMemberInvite
+      tags:
+        - Invitations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgMemberInvite'
+      responses:
+        '201':
+          description: Organization member invite created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgMemberInvite'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /org-member-invites/{inviteId}:
+    parameters:
+      - in: path
+        name: inviteId
+        required: true
+        schema:
+          type: string
+        description: ID of the organization member invite to retrieve
+    get:
+      summary: Retrieve an organization member invite by ID
+      operationId: getOrgMemberInviteById
+      tags:
+        - Invitations
+      responses:
+        '200':
+          description: Organization member invite found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgMemberInvite'
+        '404':
+          description: Organization member invite not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an organization member invite
+      operationId: updateOrgMemberInvite
+      tags:
+        - Invitations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgMemberInvite'
+      responses:
+        '200':
+          description: Organization member invite updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgMemberInvite'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Organization member invite not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an organization member invite
+      operationId: deleteOrgMemberInvite
+      tags:
+        - Invitations
+      responses:
+        '204':
+          description: Organization member invite deleted successfully
+        '404':
+          description: Organization member invite not found
+        '500':
+          description: Internal server error
+
+  # OrgMember
+  /org-members:
+    get:
+      summary: Get all organization members
+      operationId: getAllOrgMembers
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: List of organization members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrgMember'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create an organization member
+      operationId: createOrgMember
+      tags:
+        - Organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgMember'
+      responses:
+        '201':
+          description: Organization member created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgMember'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /org-members/{memberId}:
+    parameters:
+      - in: path
+        name: memberId
+        required: true
+        schema:
+          type: string
+        description: ID of the organization member to retrieve
+    get:
+      summary: Retrieve an organization member by ID
+      operationId: getOrgMemberById
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: Organization member found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgMember'
+        '404':
+          description: Organization member not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an organization member
+      operationId: updateOrgMember
+      tags:
+        - Organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgMember'
+      responses:
+        '200':
+          description: Organization member updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrgMember'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Organization member not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an organization member
+      operationId: deleteOrgMember
+      tags:
+        - Organizations
+      responses:
+        '204':
+          description: Organization member deleted successfully
+        '404':
+          description: Organization member not found
+        '500':
+          description: Internal server error
+
+  # Organization
+  /organizations:
+    get:
+      summary: Get all organizations
+      operationId: getAllOrganizations
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: List of organizations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create an organization
+      operationId: createOrganization
+      tags:
+        - Organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug:
+                  type: string
+                  example: "Humbletree"
+                shopifyOrganizationId:
+                  type: string
+                  example: "124234123"
+                shopifyPartnerApiToken:
+                  type: string
+                  example: "ck2j49r2a0d1m0741gzhjo41v" 
+                role:
+                 type: string
+                 enum:
+                  - ADMIN
+                  - MEMBER
+                userId:
+                  type: string
+                  example: "ck2j49r2a0d1m0741gzhjo41v"
+              
+      responses:
+        '201':
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /organizations/{organizationId}:
+    parameters:
+      - in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        description: ID of the organization to retrieve
+    get:
+      summary: Retrieve an organization by ID
+      operationId: getOrganizationById
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: Organization found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '404':
+          description: Organization not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an organization
+      operationId: updateOrganization
+      tags:
+        - Organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '200':
+          description: Organization updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Organization not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an organization
+      operationId: deleteOrganization
+      tags:
+        - Organizations
+      responses:
+        '204':
+          description: Organization deleted successfully
+        '404':
+          description: Organization not found
+        '500':
+          description: Internal server error
+
+  # Apps
+  /apps:
+    get:
+      summary: Get all apps
+      operationId: getAllApps
+      tags:
+        - Apps
+      responses:
+        '200':
+          description: List of apps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Apps'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create an app
+      operationId: createApp
+      tags:
+        - Apps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apps'
+      responses:
+        '201':
+          description: App created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apps'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /apps/{appId}:
+    parameters:
+      - in: path
+        name: appId
+        required: true
+        schema:
+          type: string
+        description: ID of the app to retrieve
+    get:
+      summary: Retrieve an app by ID
+      operationId: getAppById
+      tags:
+        - Apps
+      responses:
+        '200':
+          description: App found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apps'
+        '404':
+          description: App not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an app
+      operationId: updateApp
+      tags:
+        - Apps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Apps'
+      responses:
+        '200':
+          description: App updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Apps'
+        '400':
+          description: Invalid request body
+        '404':
+          description: App not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete an app
+      operationId: deleteApp
+      tags:
+        - Apps
+      responses:
+        '204':
+          description: App deleted successfully
+        '404':
+          description: App not found
+        '500':
+          description: Internal server error
+
+  # Leads
+  /leads:
+    get:
+      summary: Get all leads
+      operationId: getAllLeads
+      tags:
+        - Leads
+      responses:
+        '200':
+          description: List of leads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lead'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a lead
+      operationId: createLead
+      tags:
+        - Leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '201':
+          description: Lead created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lead'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /leads/{leadId}:
+    parameters:
+      - in: path
+        name: leadId
+        required: true
+        schema:
+          type: string
+        description: ID of the lead to retrieve
+    get:
+      summary: Retrieve a lead by ID
+      operationId: getLeadById
+      tags:
+        - Leads
+      responses:
+        '200':
+          description: Lead found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lead'
+        '404':
+          description: Lead not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a lead
+      operationId: updateLead
+      tags:
+        - Leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Lead'
+      responses:
+        '200':
+          description: Lead updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lead'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Lead not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a lead
+      operationId: deleteLead
+      tags:
+        - Leads
+      responses:
+        '204':
+          description: Lead deleted successfully
+        '404':
+          description: Lead not found
+        '500':
+          description: Internal server error
+
+  # LeadApps
+  /lead-apps:
+    get:
+      summary: Get all lead apps
+      operationId: getAllLeadApps
+      tags:
+        - Leads
+      responses:
+        '200':
+          description: List of lead apps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeadApps'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a lead app
+      operationId: createLeadApp
+      tags:
+        - Leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadApps'
+      responses:
+        '201':
+          description: Lead app created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadApps'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /lead-apps/{leadAppId}:
+    parameters:
+      - in: path
+        name: leadAppId
+        required: true
+        schema:
+          type: string
+        description: ID of the lead app to retrieve
+    get:
+      summary: Retrieve a lead app by ID
+      operationId: getLeadAppById
+      tags:
+        - Leads
+      responses:
+        '200':
+          description: Lead app found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadApps'
+        '404':
+          description: Lead app not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a lead app
+      operationId: updateLeadApp
+      tags:
+        - Leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadApps'
+      responses:
+        '200':
+          description: Lead app updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadApps'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Lead app not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a lead app
+      operationId: deleteLeadApp
+      tags:
+        - Leads
+      responses:
+        '204':
+          description: Lead app deleted successfully
+        '404':
+          description: Lead app not found
+        '500':
+          description: Internal server error
+
+  # Notes
+  /notes:
+    get:
+      summary: Get all notes
+      operationId: getAllNotes
+      tags:
+        - Notes
+      responses:
+        '200':
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notes'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a note
+      operationId: createNote
+      tags:
+        - Notes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notes'
+      responses:
+        '201':
+          description: Note created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /notes/{noteId}:
+    parameters:
+      - in: path
+        name: noteId
+        required: true
+        schema:
+          type: string
+        description: ID of the note to retrieve
+    get:
+      summary: Retrieve a note by ID
+      operationId: getNoteById
+      tags:
+        - Notes
+      responses:
+        '200':
+          description: Note found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+        '404':
+          description: Note not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a note
+      operationId: updateNote
+      tags:
+        - Notes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notes'
+      responses:
+        '200':
+          description: Note updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Note not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a note
+      operationId: deleteNote
+      tags:
+        - Notes
+      responses:
+        '204':
+          description: Note deleted successfully
+        '404':
+          description: Note not found
+        '500':
+          description: Internal server error
+
+  # Contacts
+  /contacts:
+    get:
+      summary: Get all contacts
+      operationId: getAllContacts
+      tags:
+        - Contacts
+      responses:
+        '200':
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contacts'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a contact
+      operationId: createContact
+      tags:
+        - Contacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contacts'
+      responses:
+        '201':
+          description: Contact created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /contacts/{contactId}:
+    parameters:
+      - in: path
+        name: contactId
+        required: true
+        schema:
+          type: string
+        description: ID of the contact to retrieve
+    get:
+      summary: Retrieve a contact by ID
+      operationId: getContactById
+      tags:
+        - Contacts
+      responses:
+        '200':
+          description: Contact found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'
+        '404':
+          description: Contact not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a contact
+      operationId: updateContact
+      tags:
+        - Contacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contacts'
+      responses:
+        '200':
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacts'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Contact not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a contact
+      operationId: deleteContact
+      tags:
+        - Contacts
+      responses:
+        '204':
+          description: Contact deleted successfully
+        '404':
+          description: Contact not found
+        '500':
+          description: Internal server error
+
+  # MessageHistory
+  /message-history:
+    get:
+      summary: Get all message history
+      operationId: getAllMessageHistory
+      tags:
+        - MessageHistory
+      responses:
+        '200':
+          description: List of message history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageHistory'
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a message history
+      operationId: createMessageHistory
+      tags:
+        - MessageHistory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              
+      responses:
+        '201':
+          description: Message history created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageHistory'
+        '400':
+          description: Invalid request body
+        '500':
+          description: Internal server error
+
+  /message-history/{messageId}:
+    parameters:
+      - in: path
+        name: messageId
+        required: true
+        schema:
+          type: string
+        description: ID of the message history to retrieve
+    get:
+      summary: Retrieve a message history by ID
+      operationId: getMessageHistoryById
+      tags:
+        - MessageHistory
+      responses:
+        '200':
+          description: Message history found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageHistory'
+        '404':
+          description: Message history not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update a message history
+      operationId: updateMessageHistory
+      tags:
+        - MessageHistory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageHistory'
+      responses:
+        '200':
+          description: Message history updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageHistory'
+        '400':
+          description: Invalid request body
+        '404':
+          description: Message history not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Delete a message history
+      operationId: deleteMessageHistory
+      tags:
+        - MessageHistory
+      responses:
+        '204':
+          description: Message history deleted successfully
+        '404':
+          description: Message history not found
+        '500':
+          description: Internal server error
+
+# ----------------------------------------------------------------------  Schema or Tabels -----------------------------------------------------------------------
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        email:
+          type: string
+          example: "user@example.com"
+        authenticationMethod:
+          type: string
+          enum:
+            - GOOGLE
+            - MAGIC_LINK
+        authenticationProfile:
+          type: object
+        name:
+          type: string
+          example: "John Doe"
+        avatarUrl:
+          type: string
+          format: uri
+          example: "http://example.com/avatar.jpg"
+        admin:
+          type: boolean
+          default: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+        OrgMemberInvite:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrgMemberInvite'
+        OrgMember:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrgMember'
+
+    OrgMemberInvite:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        token:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        email:
+          type: string
+          example: "invitee@example.com"
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MEMBER
+          example: "MEMBER"
+        organizationId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        inviterId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+  
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        slug:
+          type: string
+          example: "organization-slug"
+        shopifyOrganizationId:
+          type: string
+          example: "shopify-org-id"
+        shopifyPartnerApiToken:
+          type: string
+          example: "shopify-partner-api-token"
+        description:
+          type: string
+          example: "This is a sample organization."
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        deletedAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        Apps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Apps'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrgMember'
+        invites:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrgMemberInvite'
+  
+    OrgMember:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        organizationId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        userId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MEMBER
+          example: "MEMBER"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+  
+    Apps:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        slug:
+          type: string
+          example: "app-slug"
+        name:
+          type: string
+          example: "My Awesome App"
+        externalRef:
+          type: string
+          example: "external-reference"
+        organizationId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        deletedAt:
+          type: string
+          format: date-time
+          example: "2023-07-18T12:34:56Z"
+        version:
+          type: string
+          enum:
+            - V2
+            - V3
+          example: "V2"
+        LeadApps:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeadApps'
+
+    Lead:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        shopifyDomain:
+          type: string
+          example: "example.myshopify.com"
+        shopifyStoreId:
+          type: string
+          example: "123456789"
+        noteId:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notes'
+        Apps:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeadApps'
+
+    LeadApps:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        leadId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        appId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v" 
+        Lead:
+          $ref: '#/components/schemas/Lead'  
+        App:
+          $ref: '#/components/schemas/Apps'
+   
+    Notes:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        leadId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"  
+        Lead:
+          $ref: '#/components/schemas/Lead'  
+   
+    Contacts:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+   
+    MessageHistory:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+
+    AppActivity:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        appId:
+          type: string
+          example: "ck2j49r2a0d1m0741gzhjo41v"
+        type:
+          type: string
+        createdAt:
+          type: date-time
+        updatedAt:
+          type: date-time
+          
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

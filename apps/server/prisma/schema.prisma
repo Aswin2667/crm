@@ -1,3 +1,7 @@
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -54,18 +58,20 @@ enum OrgMemberRole {
 }
 
 model Organization {
-  id          String  @id @default(cuid())
-  slug        String  @unique
-  title       String
-  description String?
+  id   String @id @default(cuid())
+  slug String @unique
+
+  shopifyOrganizationId  String  @unique
+  shopifyPartnerApiToken String  @unique
+  description            String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  Apps App[]
-  members  OrgMember[]
-  invites  OrgMemberInvite[]
+  Apps    Apps[]
+  members OrgMember[]
+  invites OrgMemberInvite[]
 }
 
 model OrgMember {
@@ -85,7 +91,7 @@ model OrgMember {
   @@unique([organizationId, userId])
 }
 
-model App {
+model Apps {
   id   String @id @default(cuid())
   slug String @unique
   name String
@@ -100,6 +106,8 @@ model App {
   deletedAt DateTime?
 
   version AppVersion @default(V2)
+
+  LeadApps LeadApps[]
 }
 
 enum AppVersion {
@@ -107,3 +115,36 @@ enum AppVersion {
   V3
 }
 
+model MessageHistory {
+  id String @id @default(cuid())
+}
+
+model Notes {
+  id     String @id @default(cuid())
+  leadId String
+
+  Lead Lead @relation(fields: [leadId], references: [id])
+}
+
+model Lead {
+  id             String     @id @default(cuid())
+  shopifyDomain  String     @unique
+  shopifyStoreId String     @unique
+  noteId         Notes[]
+  Apps           LeadApps[]
+}
+
+model LeadApps {
+  id     String @id @default(cuid())
+  leadId String
+  appId  String
+
+  Lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  App  Apps @relation(fields: [appId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([appId, leadId])
+}
+
+model Contacts {
+  id String @id @default(cuid())
+}
